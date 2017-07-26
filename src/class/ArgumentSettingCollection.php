@@ -29,13 +29,11 @@ class ArgumentSettingCollection extends GenericCollection
     /**
      * @param ArgumentSetting $value
      * @param string          $parameterName
-     * @param string          $shortFlagName
-     * @param string          $longFlagName
      *
      * @throws \Com\PaulDevelop\Library\Common\ArgumentException
      * @throws \Com\PaulDevelop\Library\Common\TypeCheckException
      */
-    public function add(ArgumentSetting $value = null, $parameterName = '', $shortFlagName = '', $longFlagName = '')
+    public function add($value = null, $parameterName = '') // , $shortFlagName = '', $longFlagName = ''
     {
         $id = count($this->parameterNames);
         $this->parameterNames[$id] = $value->ParameterName;
@@ -43,6 +41,8 @@ class ArgumentSettingCollection extends GenericCollection
         $this->longFlagNames[$id] = $value->LongFlagName;
         parent::add($value);
     }
+//* @param string          $shortFlagName
+//* @param string          $longFlagName
 
     /**
      * @param string $offset
