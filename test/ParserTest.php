@@ -4,10 +4,11 @@ namespace Com\PaulDevelop\CommandLineArguments;
 
 use Com\PaulDevelop\Library\CommandLineArguments\Argument;
 use Com\PaulDevelop\Library\CommandLineArguments\ArgumentCollection;
+use Com\PaulDevelop\Library\CommandLineArguments\ArgumentMissingException;
 use Com\PaulDevelop\Library\CommandLineArguments\ArgumentType;
 use Com\PaulDevelop\Library\CommandLineArguments\Parser;
 
-class ParserTest extends \PHPUnit_Framework_TestCase
+class ParserTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * @test
@@ -129,6 +130,55 @@ class ParserTest extends \PHPUnit_Framework_TestCase
         );
 
         $this->assertEquals($expected, $actual);
+    }
+
+    /**
+     * @test
+     */
+    public function testArgumentShortFlagWithSettingsAndTemplateWithoutParameter()
+    {
+        $expected = new ArgumentCollection();
+        $typeShortFlag = new ArgumentType();
+//        $typeShortFlag->addFlag(ArgumentType::SHORT_FLAG);
+//        $expected->add(new Argument('m', '/home/vagrant/project/model/website.model.xml', $typeShortFlag), 'm');
+//        $expected->add(
+//            new Argument('mt', '/home/vagrant/project/.generator/templates/website-3.0.0', $typeShortFlag), 'mt'
+//        );
+//        $expected->add(new Argument('t', '/home/vagrant/project/_templates/', $typeShortFlag), 't');
+//        $expected->add(new Argument('o', '/home/vagrant/project/', $typeShortFlag), 'o');
+//        $expected->add(new Argument('l', 'src/controller/frontend/:src/template/frontend/', $typeShortFlag), 'l');
+//        $expected->add(new Argument('c', '/home/vagrant/project/.generator/generator.xml', $typeShortFlag), 'c');
+//        $expected->add(new Argument('v', '', $typeShortFlag), 'v');
+//        $typeLongFlag = new ArgumentType();
+//        $typeLongFlag->addFlag(ArgumentType::LONG_FLAG);
+//        $expected->add(new Argument('database', 'pd:pd@127.0.0.1/pd_generator', $typeLongFlag), 'database');
+//        $expected->add(
+//            new Argument('database-test', 'test:test@127.0.0.1/test_pd_generator', $typeLongFlag),
+//            'database-test'
+//        );
+//        $expected->add(
+//            new Argument('application-host', 'http://generator.pauldevelop.de/', $typeLongFlag),
+//            'application-host'
+//        );
+//        $expected->add(new Argument('application-path', '/', $typeLongFlag), 'application-path');
+//        $expected->add(new Argument('application-name', 'generator', $typeLongFlag), 'application-name');
+//        $expected->add(
+//            new Argument('application-namespace', 'Com\\PaulDevelop\\Generator\\Website', $typeLongFlag),
+//            'application-namespace'
+//        );
+//        $expected = 'Error: missing mandatory parameter'.PHP_EOL.PHP_EOL.'usage: ';
+
+        $this->expectException(ArgumentMissingException::class);
+        $actual = Parser::parse(
+            '',
+            '/m/model=file,/mt/master-template=dir?,/t/template=dir,/o/output=dir?,/l/limit=list?,/c/config=file?'.
+            ',/v/verbose,//database=dsn,//database-test=dsn,//application-host=url,//application-path=path'.
+            ',//application-name=name,//application-namespace=name'
+        );
+//        $this->assertEquals($expected, $actual);
+
+        //throw new ArgumentMissingException("mandatory argument ".$argument->Name." is empty");
+
     }
 
     /**

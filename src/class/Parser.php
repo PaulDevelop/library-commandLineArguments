@@ -92,6 +92,7 @@ abstract class Parser
      * @return ArgumentCollection
      * @throws \Com\PaulDevelop\Library\Common\ArgumentException
      * @throws \Com\PaulDevelop\Library\Common\TypeCheckException
+     * @throws ArgumentMissingException
      */
     public static function parse($commandLineArguments = '', $argumentSettings = '')
     {
@@ -235,9 +236,70 @@ abstract class Parser
         // checks
         if ($argumentSettingCollection != null) {
             $result = self::collapseNameAndValue($result, $argumentSettingCollection);
-        }
 
-        // check missing optional arguments
+            //$mandatoryArgumentSettingList = array_filter(
+            //    $argumentSettingCollection->getIterator()->getArrayCopy(),
+            //    function(ArgumentSetting $argumentSetting) { return !$argumentSetting->Optional; }
+            //);
+
+            //$mandatoryArgumentSettingList = array();
+            $expectedMandatoryArgumentSettingNameList = array();
+            /** @var ArgumentSetting $argumentSetting */
+            foreach ($argumentSettingCollection as $argumentSetting) {
+                if (!$argumentSetting->Optional) {
+                    array_push($expectedMandatoryArgumentSettingNameList, $argumentSetting->ShortFlagName);
+                }
+            }
+
+            $actualMandatoryArgumentNameList = array();
+            /** @var Argument $argument */
+            foreach ( $result as $argument ) {
+                if ( $argument->Type == ArgumentType::PARAMETER && $argument->Value == '' ) {
+                    continue;
+                }
+
+                /** @var ArgumentSetting $argumentSetting */
+                $argumentSetting = $argumentSettingCollection[$argument->Name];
+                if ( $argumentSetting != null ) {
+                    $argumentSetting = $argumentSettingCollection[$argument->Name];
+                    if ($argumentSetting != null) {
+                        if ( !$argumentSetting->Optional ) {
+                            array_push($actualMandatoryArgumentNameList, $argumentSetting->ShortFlagName);
+                        }
+                    }
+                }
+            }
+
+            $diff = array_diff($expectedMandatoryArgumentSettingNameList, $actualMandatoryArgumentNameList);
+            if ( sizeof($diff) > 0 ) {
+                $missingArgumentNameList = '';
+                foreach ( $diff as $argumentName ) {
+                    $missingArgumentNameList .= ( $missingArgumentNameList != '' ? ', ' : '') . $argumentName;
+                }
+
+                throw new ArgumentMissingException("mandatory argument(s): \"" . $missingArgumentNameList . "\" are missing or empty");
+            }
+
+
+            //var_dump($diff);
+
+//            // check missing optional arguments
+//            foreach ( $result as $argument ) {
+//                /** @var $argument Argument  */
+//                $argumentSetting = $argumentSettingCollection[$argument->Name];
+//                if ( $argumentSetting != null ) {
+//                    $argumentSetting = $argumentSettingCollection[$argument->Name];
+//                    if ($argumentSetting != null) {
+//                        $optional = $argumentSettingCollection[$argument->Name]->Optional;
+//                        echo "ARGUMENT: ".$argument->Name." => ".( $optional ? "OPTIONAL": "MANDATORY" )." (value is: ".$argument->Value.")".PHP_EOL;
+//                        if (!$optional && $argument->Value == "") {
+//                            echo "  xxx PROBLEM".PHP_EOL;
+//                            throw new ArgumentMissingException("mandatory argument " . $argument->Name . " is empty");
+//                        }
+//                    }
+//                }
+//            }
+        }
 
         // return
         return $result;
